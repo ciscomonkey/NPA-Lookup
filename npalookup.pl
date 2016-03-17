@@ -44,7 +44,7 @@ sub main
 
 	print "\n";
 
-	$dom = $parser->XMLin( $data2 );
+	$dom = $parser->XMLin( $dialplan );
 
 	# I keep finding odd spaces in these fields.
 	foreach my $key ( keys $dom->{'dpdata'} ) {
