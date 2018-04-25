@@ -9,12 +9,18 @@ use Data::Dumper;
 # Turn off output buffering
 $|=1;
 
+my $e164map = 0;
+
 sub main
 {
 	if ( $ARGV[0] =~ /^$/ || $ARGV[1] =~ /^$/ ) {
 		print "\nERROR: Missing parameters\n";
 		print "usage: npalookup.pl [NPA] [NXX]\n";
 		exit(1);
+	}
+
+	if ( $ARGV[2] =~ /^e164$/ ) {
+		$e164map = 1;
 	}
 
 	print "Looking up NPA $ARGV[0] NXX $ARGV[1]\n";
@@ -35,7 +41,8 @@ sub main
 	print "\nLocal NPAs:\n";
 
 	foreach my $npa ( @entries ) {
-		$npas{ $npa->{'npa'} } = 1;
+		push( @{ $npas{ $npa->{'npa'} } }, $npa->{'nxx'} );
+		#$npas{ $npa->{'npa'} } = 1;
 	}
 
 	foreach my $npa ( keys %npas ) {
@@ -60,6 +67,15 @@ sub main
 	print "   Toll (FNPA): " . $dom->{'dpdata'}->{'std_fnpa_toll'} . "\n";
 	print "   Oper Assist: " . $dom->{'dpdata'}->{'std_oper_assis'} . "\n";
 	print "\n";
+
+	if ( $e164map ) {
+		print "e164-maps:\n";
+		foreach my $npa ( sort keys %npas ) {
+			foreach my $nxx ( @{ $npas{ $npa } } ) {
+				print " e164 \+1$npa$nxx....\n";
+			}
+		}
+	}
 }
 
 main();
